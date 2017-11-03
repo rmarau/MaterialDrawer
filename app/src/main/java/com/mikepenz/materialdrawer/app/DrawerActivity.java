@@ -29,6 +29,9 @@ import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DrawerActivity extends AppCompatActivity {
     private static final int PROFILE_SETTING = 100000;
 
@@ -126,7 +129,7 @@ public class DrawerActivity extends AppCompatActivity {
                         new ExpandableDrawerItem().withName("Collapsable").withIcon(GoogleMaterial.Icon.gmd_filter_list).withIdentifier(19).withSelectable(false).withSubItems(
                             new SecondaryDrawerItem().withName("CollapsableItem").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_filter_list).withIdentifier(2002),
                             new SecondaryDrawerItem().withName("CollapsableItem 2").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_filter_list).withIdentifier(2003)
-                        ),
+                        ).withIsExpanded(true),
                         new SectionDrawerItem().withName(R.string.drawer_item_section_header),
                         new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_github).withIdentifier(20).withSelectable(false),
                         new SecondaryDrawerItem().withName(R.string.drawer_item_contact).withIcon(GoogleMaterial.Icon.gmd_format_color_fill).withIdentifier(21).withTag("Bullhorn")
@@ -209,6 +212,21 @@ public class DrawerActivity extends AppCompatActivity {
         }
 
         result.updateBadge(4, new StringHolder(10 + ""));
+
+        //get List of Expanded DrawerItems
+        List<IDrawerItem> toManualExpand=new ArrayList<>();
+        for (IDrawerItem item :result.getItemAdapter().getAdapterItems())
+            if (item.isExpanded())
+                toManualExpand.add(item);
+
+        //Manually drop the subItems
+        for (IDrawerItem item :toManualExpand){
+            int pos=result.getAdapter().getPosition(item);
+            for (Object subItem:item.getSubItems())
+                if (subItem instanceof IDrawerItem)
+                    result.addItemAtPosition((IDrawerItem) subItem, ++pos );
+        }
+
     }
 
     /*
